@@ -1,15 +1,10 @@
 import React from "react";
 import Document, { Main } from "next/document";
+
 // import { NextScript } from "next/document";
 import htmlescape from "htmlescape";
 
 export default class MyDocument extends Document {
-  constructor(props) {
-    super(props);
-    const { __NEXT_DATA__ } = props;
-    //console.log(__NEXT_DATA__);
-  }
-
   render() {
     return (
       <html lang="no">
@@ -17,7 +12,6 @@ export default class MyDocument extends Document {
           <Main />
           {/* <NextScript /> */}
           {createNextData(this.props.__NEXT_DATA__)}
-          {renderNextScript(this.props.__NEXT_DATA__)}
           {renderBuiltInNextScript(this.props.__NEXT_DATA__)}
         </body>
       </html>
@@ -41,16 +35,13 @@ function renderNextScript({ buildId, page }) {
     />
   );
 }
-
 function renderBuiltInNextScript({ buildId, page }) {
   return (
     <React.Fragment>
       {renderNextScript({ buildId, page: "/_app" })}
       {renderNextScript({ buildId, page: "/_error" })}
-      <script
-        async
-        src={`/_next/static/commons/main-5af2b0d64987b3ade558.js`}
-      />
+      <script async src="/main.js" />
+      {loadStateAndLoadNext({ buildId, page })}
     </React.Fragment>
   );
 }
@@ -84,9 +75,38 @@ function createNextData(nextData) {
   return <script dangerouslySetInnerHTML={{ __html: data }} />;
 }
 
-{
-  /* <script async="" id="__NEXT_PAGE__/" src="/_next/dd804c98-e228-4ad4-839b-d995624b1487/page/index.js"></script>
-<script async="" id="__NEXT_PAGE__/_app" src="/_next/dd804c98-e228-4ad4-839b-d995624b1487/page/_app.js"></script>
-<script async="" id="__NEXT_PAGE__/_error" src="/_next/dd804c98-e228-4ad4-839b-d995624b1487/page/_error.js"></script>
-<script src="/_next/static/commons/main-5af2b0d64987b3ade558.js" async=""></script> */
+function loadStateAndLoadNext({ buildId, page }) {
+  const data = `
+
+  function mapPage(page) {
+    if (page === "/") {
+      return "/index.js";
+    }
+    return page + ".js"
+  }
+    function loadScript(url) {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.async = true;
+      script.src = url;
+      document.getElementsByTagName("head")[0].appendChild(script);
+    }
+
+    // TODO: is fetch supported by all (IE11 ?)
+    fetch("/?api=true")
+      .then(function(res) {
+        return res.json();
+      })
+      .then(function(pageProps) {
+        var nextData = window.__NEXT_DATA__;
+        nextData.query.data = pageProps;
+        window.__NEXT_DATA__ = nextData;
+      })
+      .then(function() {
+        var page = mapPage("${page}")
+        loadScript("/_next/${buildId}/page" + page);
+      })
+      .catch(err => console.log("err Json", err));
+    `;
+  return <script dangerouslySetInnerHTML={{ __html: data }} />;
 }
