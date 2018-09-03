@@ -46,16 +46,8 @@ function renderNextScript({ buildId, page }) {
 function renderBuiltInNextScript({ buildId, page }) {
   return (
     <React.Fragment>
-      <script
-        async
-        id="__NEXT_PAGE__/_app"
-        src={`/_next/${buildId}/page/_app.js`}
-      />
-      <script
-        async
-        id="__NEXT_PAGE__/_error"
-        src={`/_next/${buildId}/page/_error.js`}
-      />
+      {renderNextScript({ buildId, page: "_app" })}
+      {renderNextScript({ buildId, page: "_error" })}
       <script
         async
         src={`/_next/static/commons/main-5af2b0d64987b3ade558.js`}

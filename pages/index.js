@@ -1,20 +1,21 @@
 import React from "react";
-import Page from "../components/Page";
 
-export default class Counter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: "From SSR"
-    };
+class App extends React.Component {
+  static getInitialProps({
+    query: {
+      data: { title }
+    }
+  }) {
+    return { title };
   }
 
-  componentDidMount() {
-    this.setState({
-      title: "From Client"
-    });
-  }
   render() {
-    return <Page title={this.state.title} />;
+    return (
+      <div>
+        <h1>{this.props.title}</h1>
+      </div>
+    );
   }
 }
+
+export default Page;
