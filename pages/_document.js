@@ -11,7 +11,6 @@ export default class MyDocument extends Document {
   }
 
   render() {
-    console.log("this.props.__NEXT_DATA__", this.props.__NEXT_DATA__);
     return (
       <html lang="no">
         <body>
@@ -30,7 +29,7 @@ function mapPage(page) {
   if (page === "/") {
     return "/index.js";
   }
-  return page;
+  return `${page}.js`;
 }
 
 function renderNextScript({ buildId, page }) {
@@ -46,8 +45,8 @@ function renderNextScript({ buildId, page }) {
 function renderBuiltInNextScript({ buildId, page }) {
   return (
     <React.Fragment>
-      {renderNextScript({ buildId, page: "_app" })}
-      {renderNextScript({ buildId, page: "_error" })}
+      {renderNextScript({ buildId, page: "/_app" })}
+      {renderNextScript({ buildId, page: "/_error" })}
       <script
         async
         src={`/_next/static/commons/main-5af2b0d64987b3ade558.js`}
@@ -60,6 +59,10 @@ function createNextData(nextData) {
   if (!nextData.chunks) {
     nextData.chunks = [];
   }
+  if (nextData.props) {
+    nextData.props.pageProps = null;
+  }
+
   const data = `
         __NEXT_DATA__ = ${htmlescape(nextData)}
         module={}
