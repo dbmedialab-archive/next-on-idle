@@ -10,6 +10,10 @@ const commonChunksFile = fs.readdirSync(`${__dirname}/.next/static/commons`);
 const mainFileArr = commonChunksFile.filter(file => file.indexOf("main-") == 0);
 const mainFile = mainFileArr[0];
 
+const buildId = fs.readFileSync(`${__dirname}/.next/BUILD_ID`, {
+  encoding: "utf-8"
+});
+
 console.log(`mainFile: ${mainFile}`);
 
 app.prepare().then(() => {
@@ -26,7 +30,7 @@ app.prepare().then(() => {
     return app.render(req, res, "/", req.query);
   });
 
-  server.get("/main.js", (req, res) => {
+  server.get(`/${buildId}/main.js`, (req, res) => {
     req.url = `/_next/static/commons/${mainFile}`;
     return handle(req, res);
   });

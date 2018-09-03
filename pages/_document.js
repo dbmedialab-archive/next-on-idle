@@ -40,7 +40,7 @@ function renderBuiltInNextScript({ buildId, page }) {
     <React.Fragment>
       {renderNextScript({ buildId, page: "/_app" })}
       {renderNextScript({ buildId, page: "/_error" })}
-      <script async src="/main.js" />
+      <script async src={`/${buildId}/main.js`} />
       {loadStateAndLoadNext({ buildId, page })}
     </React.Fragment>
   );
